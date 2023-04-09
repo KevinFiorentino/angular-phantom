@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { PublicKey } from '@solana/web3.js';
 
 @Component({
   selector: 'app-root',
@@ -8,8 +9,8 @@ import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 })
 export class AppComponent {
 
-  public address: string = '';
   public phantom?: PhantomWalletAdapter;
+  public address: string = '';
 
   async connectWallet() {
     this.phantom = new PhantomWalletAdapter();
@@ -22,16 +23,18 @@ export class AppComponent {
   }
 
   async disconnectWallet() {
-    await this.phantom?.disconnect();
     this.address = '';
+    await this.phantom?.disconnect();
   }
 
   listeningChangeWallet() {
+    /* (window as any).solana.on('accountChanged', (publicKey: PublicKey) => {
+      this.address = publicKey.toString();
+      console.log('Change Address:', this.address)
+    }); */
     this.phantom?.on('connect', (publicKey) => {
-      if (publicKey) {
-        this.address = publicKey.toString();
-        console.log('New Address', this.address)
-      }
+      this.address = publicKey.toString();
+      console.log('Change Address:', this.address)
     });
   }
 
